@@ -8,57 +8,71 @@ using Avalonia.Xaml.Factory.Interfaces;
 
 namespace Avalonia.Xaml.Factory.Generators.Controls;
 
+/// <summary>
+/// Генератор атрибутов для всех типов контролов.
+/// Включает кэширование свойств для повышения производительности.
+/// </summary>
+public class ControlAttributeGenerator : IAttributeGenerator
+{
+    private readonly Dictionary<Type, List<AvaloniaProperty>> _propertyCache =
+        new Dictionary<Type, List<AvaloniaProperty>>();
+
     /// <summary>
-    /// Генератор атрибутов для всех типов контролов.
-    /// Включает кэширование свойств для повышения производительности.
+    /// Добавляет атрибуты для указанного контрола в XML-элемент.
     /// </summary>
-    public class ControlAttributeGenerator : IAttributeGenerator
+    /// <param name="control">Контрол для которого нужно добавить атрибуты.</param>
+    /// <param name="element">XML-элемент в который добавляются атрибуты.</param>
+    public void AddAttributes(Control control, XElement element)
     {
-        private readonly Dictionary<Type, List<AvaloniaProperty>> _propertyCache = new Dictionary<Type, List<AvaloniaProperty>>();
+        var controlType = control.GetType();
 
-        /// <summary>
-        /// Добавляет атрибуты для указанного контрола в XML-элемент.
-        /// </summary>
-        /// <param name="control">Контрол для которого нужно добавить атрибуты.</param>
-        /// <param name="element">XML-элемент в который добавляются атрибуты.</param>
-        public void AddAttributes(Control control, XElement element)
+        // Проверка и добавление атрибута Name, если он установлен
+        if (!string.IsNullOrEmpty(control.Name))
         {
-            var controlType = control.GetType();
-            if (!_propertyCache.ContainsKey(controlType))
-            {
-                _propertyCache[controlType] = AvaloniaPropertyRegistry.Instance.GetRegistered(control).ToList();
-            }
+            element.Add(new XAttribute("Name", control.Name));
+        }
 
-            foreach (var property in _propertyCache[controlType])
+        // Кэширование свойств для повышения производительности
+        if (!_propertyCache.ContainsKey(controlType))
+        {
+            _propertyCache[controlType] = AvaloniaPropertyRegistry.Instance.GetRegistered(control).ToList();
+        }
+
+        foreach (var property in _propertyCache[controlType])
+        {
+            if (control is AvaloniaObject avaloniaObject && avaloniaObject.IsSet(property))
             {
-                if (control is AvaloniaObject avaloniaObject && avaloniaObject.IsSet(property))
+                var value = avaloniaObject.GetValue(property);
+                if (value != null && IsSimpleType(value.GetType()))
                 {
-                    var value = avaloniaObject.GetValue(property);
-                    if (value != null && IsSimpleType(value.GetType()))
-                    {
-                        string formattedValue = FormatValue(value);
-                        element.Add(new XAttribute(property.Name, formattedValue));
-                    }
+                    string formattedValue = FormatValue(value);
+                    element.Add(new XAttribute(property.Name, formattedValue));
                 }
             }
         }
-
-        private bool IsSimpleType(Type type)
-        {
-            return type.IsPrimitive || type == typeof(string) || type == typeof(double) ||
-                   type == typeof(float) || type == typeof(int) || type == typeof(bool) ||
-                   typeof(IBrush).IsAssignableFrom(type) || type == typeof(Thickness) || type.IsEnum;
-        }
-
-        private string FormatValue(object value)
-        {
-            if (value is SolidColorBrush solidColorBrush)
-                return solidColorBrush.Color.ToString();
-            if (value is IBrush brush)
-                return brush.ToString();  // Обработка кистей
-            if (value is Thickness thickness)
-                return $"{thickness.Left},{thickness.Top},{thickness.Right},{thickness.Bottom}";
-            return value.ToString();
-        }
     }
 
+    /// <summary>
+    /// Проверяет, является ли тип простым для генерации в AXAML.
+    /// </summary>
+    private bool IsSimpleType(Type type)
+    {
+        return type.IsPrimitive || type == typeof(string) || type == typeof(double) ||
+               type == typeof(float) || type == typeof(int) || type == typeof(bool) ||
+               typeof(IBrush).IsAssignableFrom(type) || type == typeof(Thickness) || type.IsEnum;
+    }
+
+    /// <summary>
+    /// Форматирует значение для добавления в атрибут.
+    /// </summary>
+    private string FormatValue(object value)
+    {
+        if (value is SolidColorBrush solidColorBrush)
+            return solidColorBrush.Color.ToString();
+        if (value is IBrush brush)
+            return brush.ToString(); // Обработка кистей
+        if (value is Thickness thickness)
+            return $"{thickness.Left},{thickness.Top},{thickness.Right},{thickness.Bottom}";
+        return value.ToString();
+    }
+}

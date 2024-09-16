@@ -5,6 +5,7 @@ using Avalonia.Xaml.Factory.Generators;
 using Avalonia.Xaml.Factory.Generators.Controls;
 using Avalonia.Xaml.Factory.Generators.Controls.ContentControl;
 using Avalonia.Xaml.Factory.Generators.Controls.Grid;
+using Avalonia.Xaml.Factory.Generators.Controls.ListBox;
 using Avalonia.Xaml.Factory.Generators.Controls.Menu;
 using Avalonia.Xaml.Factory.Generators.Controls.MenuItem;
 using Avalonia.Xaml.Factory.Generators.Controls.Panel;
@@ -42,6 +43,8 @@ public class ElementGeneratorFactory
             { typeof(Panel), new PanelElementGenerator(controlAttributeGenerator, this) },
             { typeof(ContentControl), new ContentControlElementGenerator(controlAttributeGenerator, this) },
             { typeof(TabControl), new TabControlElementGenerator(controlAttributeGenerator, this)} ,
+            { typeof(ListBox), new ListBoxElementGenerator(controlAttributeGenerator, this)} ,
+            
              /*### Menu ###*/
             { typeof(Menu), new MenuElementGenerator(controlAttributeGenerator, this) }, // Генератор для Menu
            // { typeof(MenuFlyout), new MenuFlyoutElementGenerator(controlAttributeGenerator, this) }, // Генератор для MenuFlyout
