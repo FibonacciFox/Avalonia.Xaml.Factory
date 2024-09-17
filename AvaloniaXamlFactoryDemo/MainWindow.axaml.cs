@@ -1,9 +1,7 @@
-using System.Xml.Linq;
-using Avalonia;
+using System;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory;
-using Avalonia.Xaml.Factory.Generators.Controls;
-using Avalonia.Xaml.Factory.Generators.Controls.Grid;
+using Avalonia.Xaml.Factory.Generators;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
 
@@ -14,23 +12,21 @@ namespace AvaloniaXamlFactoryDemo
         public MainWindow()
         {
             InitializeComponent();
-
-            // Инициализация фабрики и генераторов
-            var gridDefinitionGenerator = new GridDefinitionGenerator();
-            var controlAttributeGenerator = new ControlAttributeGenerator();
-            var elementGeneratorFactory = new ElementGeneratorFactory(gridDefinitionGenerator, controlAttributeGenerator);
-
-            // Инициализация AxamlGenerator
-            var axamlBuilder = new AxamlBuilder(elementGeneratorFactory);
-
+            
             // Создание интерфейса (пример)
             var targetControl = new MyUserControl();
 
-            // Генерация AXAML
-            XDocument axamlDoc = axamlBuilder.Build(targetControl);
+            // Создаем XAML документ
+            var builder = new XamlDocumentBuilder();
+
+            // Генерация элементов и атрибутов с использованием генераторов
+            ElementGenerator.GenerateElementWithAttributes(targetControl, builder);
+
+            // Получаем сгенерированный XAML
+            string axaml = builder.GetXml();
 
             // Отображение сгенерированного AXAML в TextEditor
-            DisplayGeneratedAxaml(axamlDoc.ToString(), targetControl);
+            DisplayGeneratedAxaml(axaml, targetControl);
         }
 
         /// <summary>

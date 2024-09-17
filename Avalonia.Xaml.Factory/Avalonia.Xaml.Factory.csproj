@@ -10,9 +10,4 @@
         <PackageReference Include="Avalonia" Version="11.1.3"/>
     </ItemGroup>
 
-
-    <ItemGroup>
-      <Folder Include="Generators\Controls\MenuFlyout\" />
-    </ItemGroup>
-
 </Project>

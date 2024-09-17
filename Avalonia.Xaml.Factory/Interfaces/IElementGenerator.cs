@@ -1,12 +1,13 @@
-using System.Xml.Linq;
-using Avalonia.Controls;
-
 namespace Avalonia.Xaml.Factory.Interfaces;
 
 /// <summary>
-/// Интерфейс для генерации XML-элементов для контролов.
+/// Интерфейс для генераторов элементов Avalonia UI.
 /// </summary>
 public interface IElementGenerator
 {
-    XElement Generate(Control control);
+    /// <summary>
+    /// Генерирует XAML представление для элемента.
+    /// </summary>
+    /// <param name="builder">Билдер для XAML-документа.</param>
+    void Generate(XamlDocumentBuilder builder);
 }
