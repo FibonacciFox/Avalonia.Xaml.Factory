@@ -1,5 +1,4 @@
 using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
 
@@ -27,7 +26,7 @@ public class DirectPropertyGenerator : IElementGenerator
 
         foreach (var property in properties)
         {
-            if (property.GetType().IsGenericType && property.GetType().GetGenericTypeDefinition() == typeof(DirectProperty<,>))
+            if (property.IsDirect)
             {
                 var value = _control.GetValue(property);
                 var defaultValue = defaultControl.GetValue(property);

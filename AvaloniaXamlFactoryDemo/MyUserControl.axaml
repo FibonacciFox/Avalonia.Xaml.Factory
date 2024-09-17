@@ -5,6 +5,5 @@
              x:Class="AvaloniaXamlFactoryDemo.MyUserControl"
              mc:Ignorable="d"
              d:DesignWidth="800"
-             d:DesignHeight="600"
-             >
+             d:DesignHeight="600">
 </UserControl>

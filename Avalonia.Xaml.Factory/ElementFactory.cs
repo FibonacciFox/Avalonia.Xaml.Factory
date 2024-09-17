@@ -18,9 +18,14 @@ namespace Avalonia.Xaml.Factory
                     return new StyledPropertyGenerator(control);
                 }
 
-                if (property.GetType().IsGenericType && property.GetType().GetGenericTypeDefinition() == typeof(DirectProperty<,>))
+                if (property.IsDirect)
                 {
                     return new DirectPropertyGenerator(control);
+                }
+                
+                if (property.IsAttached)
+                {
+                    return new AttachedPropertyGenerator(control);
                 }
             }
             

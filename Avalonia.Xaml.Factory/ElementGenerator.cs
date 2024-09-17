@@ -17,5 +17,9 @@ public static class ElementGenerator
         // Генерируем атрибуты для DirectProperty
         var directPropertyGenerator = new DirectPropertyGenerator(control);
         directPropertyGenerator.Generate(builder);
+        
+        // Генерируем атрибуты для DirectProperty
+        var attachedPropertyGenerator = new AttachedPropertyGenerator(control);
+        attachedPropertyGenerator.Generate(builder);
     }
 }
