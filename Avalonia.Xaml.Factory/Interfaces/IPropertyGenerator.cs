@@ -1,17 +1,13 @@
-using System.Xml.Linq;
-
 namespace Avalonia.Xaml.Factory.Interfaces;
 
 /// <summary>
-/// Интерфейс для генераторов свойств, которые генерируют XML для свойств Avalonia.
+/// Интерфейс для генераторов элементов Avalonia UI.
 /// </summary>
-public interface IPropertyGenerator
+public interface IProprtyGenerator
 {
     /// <summary>
-    /// Генерирует атрибут XML для указанного свойства и контрола Avalonia.
+    /// Генерирует XAML представление для элемента.
     /// </summary>
-    /// <param name="control">Экземпляр контрола Avalonia, у которого есть это свойство.</param>
-    /// <param name="property">Свойство Avalonia, для которого нужно сгенерировать XML.</param>
-    /// <returns>Атрибут XML, представляющий это свойство, или null, если свойство не установлено.</returns>
-    XAttribute? Generate(AvaloniaObject control, AvaloniaProperty property);
+    /// <param name="builder">Билдер для XAML-документа.</param>
+    void Generate(XamlDocumentBuilder builder);
 }

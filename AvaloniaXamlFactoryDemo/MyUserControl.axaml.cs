@@ -15,7 +15,7 @@ public partial class MyUserControl : UserControl
         VerticalAlignment = VerticalAlignment.Stretch;
         FontSize = 10;
         VerticalContentAlignment = VerticalAlignment.Stretch;
-        
+        FontSize = 10;
         Grid.SetColumn(this, 4);
     }
 }

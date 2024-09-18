@@ -6,7 +6,7 @@ namespace Avalonia.Xaml.Factory
 {
     public static class ElementFactory
     {
-        public static IElementGenerator CreateGenerator(Control control)
+        public static IProprtyGenerator CreateGenerator(Control control)
         {
             var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(control.GetType());
 

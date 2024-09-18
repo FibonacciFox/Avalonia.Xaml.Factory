@@ -2,57 +2,60 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
 
-namespace Avalonia.Xaml.Factory.Generators;
-
-/// <summary>
-/// Генератор для DirectProperty элементов Avalonia UI, который добавляет атрибуты.
-/// </summary>
-public class DirectPropertyGenerator : IElementGenerator
+namespace Avalonia.Xaml.Factory.Generators
 {
-    private readonly Control _control;
-
-    public DirectPropertyGenerator(Control control)
-    {
-        _control = control;
-    }
-
     /// <summary>
-    /// Генерация атрибутов для DirectProperty.
+    /// Генератор для DirectProperty элементов Avalonia UI, который добавляет атрибуты.
     /// </summary>
-    public void Generate(XamlDocumentBuilder builder)
+    public class DirectPropertyGenerator : IProprtyGenerator
     {
-        var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(_control.GetType());
-        var defaultControl = (Control)Activator.CreateInstance(typeof(Control));
+        private readonly Control _control;
 
-        foreach (var property in properties)
+        public DirectPropertyGenerator(Control control)
         {
-            if (property.IsDirect)
+            _control = control;
+        }
+
+        /// <summary>
+        /// Генерация атрибутов для DirectProperty.
+        /// </summary>
+        public void Generate(XamlDocumentBuilder builder)
+        {
+            var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(_control.GetType());
+
+            var parentType = _control.GetType().BaseType;
+            if (parentType == null)
             {
-                var value = _control.GetValue(property);
-                var defaultValue = defaultControl.GetValue(property);
-                if (!Equals(value, defaultValue))
+                return;
+            }
+
+            var defaultControl = Activator.CreateInstance(parentType) as Control;
+    
+            foreach (var property in properties)
+            {
+                if (property.IsDirect)
                 {
-                    builder.AddAttribute(property.Name, SerializeValue(value));
+                    var value = _control.GetValue(property);
+                    var defaultValue = defaultControl.GetValue(property);
+                    
+                    // Проверка на unset и null
+                    if (value != AvaloniaProperty.UnsetValue && value != null)
+                    {
+                        if (!Equals(value, defaultValue))
+                        {
+                            builder.AddAttribute(property.Name, SerializeValue(value));
+                        }
+                    }
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Метод для сериализации значений DirectProperty.
-    /// </summary>
-    private string SerializeValue(object value)
-    {
-        if (value == null)
+        /// <summary>
+        /// Метод для сериализации значений DirectProperty.
+        /// </summary>
+        private string SerializeValue(object value)
         {
-            return "null";
+            return value?.ToString() ?? "null";
         }
-
-        if (value is string || value is int || value is double || value is bool)
-        {
-            return value.ToString();
-        }
-
-        return value.ToString();
     }
 }

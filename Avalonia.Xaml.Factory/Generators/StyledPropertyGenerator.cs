@@ -6,7 +6,7 @@ namespace Avalonia.Xaml.Factory.Generators;
 /// <summary>
 /// Генератор для StyledProperty элементов Avalonia UI, который добавляет атрибуты.
 /// </summary>
-public class StyledPropertyGenerator : IElementGenerator
+public class StyledPropertyGenerator : IProprtyGenerator
 {
     private readonly Control _control;
 
