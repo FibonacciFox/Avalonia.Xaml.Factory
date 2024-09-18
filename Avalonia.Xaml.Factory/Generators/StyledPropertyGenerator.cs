@@ -1,55 +1,35 @@
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
 
-namespace Avalonia.Xaml.Factory.Generators;
-
-/// <summary>
-/// Генератор для StyledProperty элементов Avalonia UI, который добавляет атрибуты.
-/// </summary>
-public class StyledPropertyGenerator : IProprtyGenerator
+namespace Avalonia.Xaml.Factory.Generators
 {
-    private readonly Control _control;
-
-    public StyledPropertyGenerator(Control control)
+    public class StyledPropertyGenerator : IPropertyGenerator
     {
-        _control = control;
-    }
+        private readonly Control _control;
 
-    /// <summary>
-    /// Генерация атрибутов для StyledProperty.
-    /// </summary>
-    public void Generate(XamlDocumentBuilder builder)
-    {
-        var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(_control.GetType());
-
-        foreach (var property in properties)
+        public StyledPropertyGenerator(Control control)
         {
-            if (property.GetType().IsGenericType && property.GetType().GetGenericTypeDefinition() == typeof(StyledProperty<>))
+            _control = control;
+        }
+
+        public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl = null)
+        {
+            if (_control.IsSet(property))
             {
-                if (_control.IsSet(property))
+                var value = _control.GetValue(property);
+                var defaultValue = defaultControl?.GetValue(property);
+
+                // Добавляем проверку на корректное значение
+                if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
                 {
-                    var value = _control.GetValue(property);
                     builder.AddAttribute(property.Name, SerializeValue(value));
                 }
             }
         }
-    }
 
-    /// <summary>
-    /// Метод для сериализации значений StyledProperty.
-    /// </summary>
-    private string SerializeValue(object value)
-    {
-        if (value == null)
+        private string SerializeValue(object value)
         {
-            return "null";
+            return value?.ToString() ?? "null";
         }
-
-        if (value is string || value is int || value is double || value is bool)
-        {
-            return value.ToString();
-        }
-
-        return value.ToString();
     }
 }

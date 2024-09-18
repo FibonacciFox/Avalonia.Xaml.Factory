@@ -1,13 +1,18 @@
-namespace Avalonia.Xaml.Factory.Interfaces;
+using Avalonia.Controls;
 
-/// <summary>
-/// Интерфейс для генераторов элементов Avalonia UI.
-/// </summary>
-public interface IProprtyGenerator
+namespace Avalonia.Xaml.Factory.Interfaces
 {
     /// <summary>
-    /// Генерирует XAML представление для элемента.
+    /// Интерфейс для генераторов свойств элементов Avalonia UI.
     /// </summary>
-    /// <param name="builder">Билдер для XAML-документа.</param>
-    void Generate(XamlDocumentBuilder builder);
+    public interface IPropertyGenerator
+    {
+        /// <summary>
+        /// Генерирует XAML представление для свойства.
+        /// </summary>
+        /// <param name="builder">Билдер для XAML-документа.</param>
+        /// <param name="property">Свойство Avalonia.</param>
+        /// <param name="defaultControl">Контрол для сравнения значений по умолчанию (может быть null).</param>
+        void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl = null);
+    }
 }

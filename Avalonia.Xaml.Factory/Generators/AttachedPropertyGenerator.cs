@@ -1,14 +1,10 @@
-using System;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
-using Avalonia;
 
 namespace Avalonia.Xaml.Factory.Generators
 {
-    /// <summary>
-    /// Генератор для AttachedProperty элементов Avalonia UI, который добавляет атрибуты.
-    /// </summary>
-    public class AttachedPropertyGenerator : IProprtyGenerator
+    public class AttachedPropertyGenerator : IPropertyGenerator
     {
         private readonly Control _control;
 
@@ -17,50 +13,26 @@ namespace Avalonia.Xaml.Factory.Generators
             _control = control;
         }
 
-        /// <summary>
-        /// Генерация атрибутов для AttachedProperty.
-        /// </summary>
-        public void Generate(XamlDocumentBuilder builder)
+        public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl)
         {
-            var properties = AvaloniaPropertyRegistry.Instance.GetRegisteredAttached(_control.GetType());
-
-            var parentType = _control.GetType().BaseType;
-            if (parentType == null)
+            if (property.IsAttached)
             {
-                return;
-            }
+                var value = _control.GetValue(property);
+                var defaultValue = defaultControl?.GetValue(property);
 
-            var defaultControl = (Control)Activator.CreateInstance(parentType);
-    
-            foreach (var property in properties)
-            {
-                if (property.IsAttached)
+                // Исключаем ненужные служебные свойства, такие как "NameScope"
+                if (property.OwnerType.Name == "NameScope")
                 {
-                    var value = _control.GetValue(property);
-                    var defaultValue = defaultControl.GetValue(property);
+                    return; // Пропускаем служебные свойства
+                }
 
-                    // Исключаем ненужные свойства
-                    if (property.Name == "NameScope")
-                    {
-                        continue; // Пропускаем эти свойства
-                    }
-
-                    // Проверка на unset и null
-                    if (value != AvaloniaProperty.UnsetValue && value != null)
-                    {
-                        if (!Equals(value, defaultValue))
-                        {
-                            builder.AddAttribute($"{property.OwnerType.Name}.{property.Name}", SerializeValue(value));
-                        }
-                    }
+                if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
+                {
+                    builder.AddAttribute($"{property.OwnerType.Name}.{property.Name}", SerializeValue(value));
                 }
             }
         }
 
-
-        /// <summary>
-        /// Метод для сериализации значений AttachedProperty.
-        /// </summary>
         private string SerializeValue(object value)
         {
             return value?.ToString() ?? "null";

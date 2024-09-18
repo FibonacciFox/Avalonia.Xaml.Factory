@@ -1,7 +1,6 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory;
-using Avalonia.Xaml.Factory.Generators;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
 
@@ -12,21 +11,32 @@ namespace AvaloniaXamlFactoryDemo
         public MainWindow()
         {
             InitializeComponent();
-            
-            // Создание интерфейса (пример)
-            var targetControl = new MyUserControl();
 
-            // Создаем XAML документ
-            var builder = new XamlDocumentBuilder();
+            try
+            {
 
-            // Генерация элементов и атрибутов с использованием генераторов
-            ElementGenerator.GenerateElementWithAttributes(targetControl, builder);
+                var textBlock = new TextBlock() { Text = "DDDDDDDDDDDDDD" };
+                
+                // Создание пользовательского контрола (пример)
+                var targetControl = new MyUserControl();
 
-            // Получаем сгенерированный XAML
-            string axaml = builder.GetXml();
+                // Создаем XAML-документ
+                var builder = new XamlDocumentBuilder();
 
-            // Отображение сгенерированного AXAML в TextEditor
-            DisplayGeneratedAxaml(axaml, targetControl);
+                // Генерация элементов и атрибутов с использованием генераторов
+                ElementGenerator.GenerateElementWithAttributes(targetControl, builder);
+
+                // Получаем сгенерированный XAML
+                string axaml = builder.GetXml();
+
+                // Отображение сгенерированного AXAML в TextEditor
+                DisplayGeneratedAxaml(axaml, targetControl);
+            }
+            catch (Exception ex)
+            {
+                // Обработка исключений
+                Console.WriteLine($"Ошибка при генерации AXAML: {ex.Message}");
+            }
         }
 
         /// <summary>
@@ -36,16 +46,31 @@ namespace AvaloniaXamlFactoryDemo
         /// <param name="generatedControl">Сгенерированный контрол для отображения.</param>
         private void DisplayGeneratedAxaml(string axamlText, Control generatedControl)
         {
-            // Устанавливаем текст AXAML в TextEditor
-            AxamlTextEditor.Text = axamlText;
+            if (!string.IsNullOrEmpty(axamlText))
+            {
+                // Устанавливаем текст AXAML в TextEditor
+                AxamlTextEditor.Text = axamlText;
 
-            // Подключаем TextMate для подсветки синтаксиса
-            var registryOptions = new RegistryOptions(ThemeName.DarkPlus);
-            var textMate = AxamlTextEditor.InstallTextMate(registryOptions);
-            textMate.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".xml").Id));
+                // Подключаем TextMate для подсветки синтаксиса
+                var registryOptions = new RegistryOptions(ThemeName.DarkPlus);
+                var textMate = AxamlTextEditor.InstallTextMate(registryOptions);
+                textMate.SetGrammar(registryOptions.GetScopeByLanguageId(registryOptions.GetLanguageByExtension(".xml").Id));
+            }
+            else
+            {
+                // В случае пустого или null AXAML
+                Console.WriteLine("Сгенерированный AXAML пуст или равен null.");
+            }
 
-            // Добавляем сгенерированный контрол в ContentControl
-            GeneratedControlPlaceholder.Content = generatedControl;
+            if (generatedControl != null)
+            {
+                // Добавляем сгенерированный контрол в ContentControl
+                GeneratedControlPlaceholder.Content = generatedControl;
+            }
+            else
+            {
+                Console.WriteLine("Сгенерированный контрол равен null.");
+            }
         }
     }
 }

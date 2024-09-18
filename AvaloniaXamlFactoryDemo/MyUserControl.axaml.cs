@@ -12,9 +12,9 @@ public partial class MyUserControl : UserControl
         Background = Brushes.Gray;
         Width = 200;
         Height = 300;
-        VerticalAlignment = VerticalAlignment.Stretch;
+        VerticalAlignment = VerticalAlignment.Center;
         FontSize = 10;
-        VerticalContentAlignment = VerticalAlignment.Stretch;
+        VerticalContentAlignment = VerticalAlignment.Bottom;
         FontSize = 10;
         Grid.SetColumn(this, 4);
     }

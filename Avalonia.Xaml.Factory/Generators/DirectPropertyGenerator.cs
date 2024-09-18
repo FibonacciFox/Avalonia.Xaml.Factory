@@ -1,13 +1,9 @@
-using System;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
 
 namespace Avalonia.Xaml.Factory.Generators
 {
-    /// <summary>
-    /// Генератор для DirectProperty элементов Avalonia UI, который добавляет атрибуты.
-    /// </summary>
-    public class DirectPropertyGenerator : IProprtyGenerator
+    public class DirectPropertyGenerator : IPropertyGenerator
     {
         private readonly Control _control;
 
@@ -16,37 +12,17 @@ namespace Avalonia.Xaml.Factory.Generators
             _control = control;
         }
 
-        /// <summary>
-        /// Генерация атрибутов для DirectProperty.
-        /// </summary>
-        public void Generate(XamlDocumentBuilder builder)
+        public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl)
         {
-            var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(_control.GetType());
+            // Проверяем, установлено ли DirectProperty
+            var value = _control.GetValue(property);
+            var defaultValue = defaultControl?.GetValue(property);
 
-            var parentType = _control.GetType().BaseType;
-            if (parentType == null)
+            // Добавляем проверку на unset и null, а также сравниваем
+            if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
             {
-                return;
-            }
-
-            var defaultControl = Activator.CreateInstance(parentType) as Control;
-    
-            foreach (var property in properties)
-            {
-                if (property.IsDirect)
-                {
-                    var value = _control.GetValue(property);
-                    var defaultValue = defaultControl.GetValue(property);
-                    
-                    // Проверка на unset и null
-                    if (value != AvaloniaProperty.UnsetValue && value != null)
-                    {
-                        if (!Equals(value, defaultValue))
-                        {
-                            builder.AddAttribute(property.Name, SerializeValue(value));
-                        }
-                    }
-                }
+                // Добавляем атрибут в XAML через билдер
+                builder.AddAttribute(property.Name, SerializeValue(value));
             }
         }
 
@@ -55,6 +31,7 @@ namespace Avalonia.Xaml.Factory.Generators
         /// </summary>
         private string SerializeValue(object value)
         {
+            // Преобразуем значение в строку
             return value?.ToString() ?? "null";
         }
     }
