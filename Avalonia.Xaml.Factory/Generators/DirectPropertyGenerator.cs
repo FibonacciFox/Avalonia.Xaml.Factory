@@ -16,7 +16,7 @@ namespace Avalonia.Xaml.Factory.Generators
         {
             // Проверяем, установлено ли DirectProperty
             var value = _control.GetValue(property);
-            var defaultValue = defaultControl?.GetValue(property);
+            var defaultValue = defaultControl.GetValue(property);
 
             // Добавляем проверку на unset и null, а также сравниваем
             if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))

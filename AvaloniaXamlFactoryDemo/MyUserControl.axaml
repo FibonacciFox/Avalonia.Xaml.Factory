@@ -7,4 +7,11 @@
              d:DesignWidth="800"
              Name="MyUserControl1"
              d:DesignHeight="600">
+    <ListBox Name="List1">
+        <TextBlock>123123</TextBlock>
+        <TextBlock>123123</TextBlock>
+        <TextBlock>123123</TextBlock>
+        <TextBlock>123123</TextBlock>
+        <TextBlock>123123</TextBlock>
+    </ListBox>
 </UserControl>

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory;
 using AvaloniaEdit.TextMate;
@@ -14,12 +15,11 @@ namespace AvaloniaXamlFactoryDemo
 
             try
             {
-
-                var textBlock = new TextBlock() { Text = "DDDDDDDDDDDDDD" };
-                
+     
                 // Создание пользовательского контрола (пример)
-                var targetControl = new MyUserControl();
-
+                var targetControl = new MyUserControl().List1;
+                
+                
                 // Создаем XAML-документ
                 var builder = new XamlDocumentBuilder();
 

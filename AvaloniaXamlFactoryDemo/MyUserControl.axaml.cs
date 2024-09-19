@@ -15,9 +15,7 @@ public partial class MyUserControl : UserControl
         VerticalAlignment = VerticalAlignment.Center;
         FontSize = 10;
         Foreground = Brushes.White;
-        Content = "HELLO WORLD";
         HorizontalContentAlignment = HorizontalAlignment.Center;
         VerticalContentAlignment = VerticalAlignment.Center;
-        Grid.SetColumn(this, 4);
     }
 }
