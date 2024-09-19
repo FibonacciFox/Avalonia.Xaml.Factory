@@ -2,59 +2,53 @@ using System.Xml.Linq;
 
 namespace Avalonia.Xaml.Factory
 {
-    /// <summary>
-    /// Класс для построения XAML документа на основе объектов Avalonia UI.
-    /// Использует XDocument для управления XML структурой.
-    /// </summary>
     public class XamlDocumentBuilder
     {
-        private XElement _rootElement;
+        private XElement _currentElement;
 
         public XamlDocumentBuilder()
         {
-            _rootElement = null; // Изначально нет корневого элемента
+            _currentElement = null;
         }
 
-        /// <summary>
-        /// Добавляет новый элемент в документ.
-        /// </summary>
-        /// <param name="elementName">Имя элемента.</param>
-        public void AddElement(string elementName)
+        // Начало нового элемента
+        public void CreateElement(string elementName)
         {
             var element = new XElement(elementName);
 
-            if (_rootElement == null)
+            if (_currentElement == null)
             {
-                // Если нет корневого элемента, то это первый добавленный элемент
-                _rootElement = element;
+                _currentElement = element;
             }
             else
             {
-                // Добавляем элемент как дочерний к текущему элементу
-                _rootElement.Add(element);
+                _currentElement.Add(element);
+                _currentElement = element;
             }
         }
 
-        /// <summary>
-        /// Добавляет атрибут к последнему добавленному элементу.
-        /// </summary>
-        /// <param name="attributeName">Имя атрибута.</param>
-        /// <param name="value">Значение атрибута.</param>
+        // Завершение элемента (возвращаемся к родительскому элементу)
+        public void EndElement()
+        {
+            if (_currentElement?.Parent != null)
+            {
+                _currentElement = _currentElement.Parent;
+            }
+        }
+
+        // Добавление атрибутов
         public void AddAttribute(string attributeName, string value)
         {
-            if (_rootElement != null)
+            if (_currentElement != null)
             {
-                _rootElement.Add(new XAttribute(attributeName, value));
+                _currentElement.Add(new XAttribute(attributeName, value));
             }
         }
 
-        /// <summary>
-        /// Возвращает сгенерированный XML.
-        /// </summary>
+        // Получение XML-документа
         public string GetXml()
         {
-            // Проверяем, был ли создан корневой элемент
-            return _rootElement != null ? _rootElement.ToString() : null;
+            return _currentElement?.ToString();
         }
     }
 }

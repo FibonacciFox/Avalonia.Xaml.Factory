@@ -18,6 +18,12 @@ namespace Avalonia.Xaml.Factory.Generators
             {
                 var value = _control.GetValue(property);
                 var defaultValue = defaultControl?.GetValue(property);
+                
+                // Пропускаем, если свойство содержит контрол
+                if (value is Control)
+                {
+                    return;
+                }
 
                 // Добавляем проверку на корректное значение
                 if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory;
 using Avalonia.Xaml.Factory.Generators;
@@ -18,11 +19,20 @@ namespace AvaloniaXamlFactoryDemo
             {
      
                 // Создание пользовательского контрола (пример)
-                var targetControl = new MyUserControl();
-                var stackPanel = new StackPanel();
-                    
-                stackPanel.Children.Add(new TextBlock(){Text = "HELLO!"});
-                targetControl.Content = stackPanel;
+                var targetControl =  new Grid();
+                targetControl.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+                targetControl.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
+
+                var textBox = new TextBox { Width = 200, Margin = new Thickness(10), Watermark = "Введите текст" };
+                Grid.SetRow(textBox, 0);
+                Grid.SetColumn(textBox, 0);
+
+                var button = new Button { Width = 200, Margin = new Thickness(10), Content = "Отправить" };
+                Grid.SetRow(button, 1);
+                Grid.SetColumn(button, 0);
+
+                targetControl.Children.Add(textBox);
+                targetControl.Children.Add(button);
                 
                 // Создаем XAML-документ
                 var builder = new XamlDocumentBuilder();
