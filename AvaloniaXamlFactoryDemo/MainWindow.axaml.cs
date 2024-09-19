@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory;
+using Avalonia.Xaml.Factory.Generators;
 using AvaloniaEdit.TextMate;
 using TextMateSharp.Grammars;
 
@@ -17,8 +18,11 @@ namespace AvaloniaXamlFactoryDemo
             {
      
                 // Создание пользовательского контрола (пример)
-                var targetControl = new MyUserControl().List1;
-                
+                var targetControl = new MyUserControl();
+                var stackPanel = new StackPanel();
+                    
+                stackPanel.Children.Add(new TextBlock(){Text = "HELLO!"});
+                targetControl.Content = stackPanel;
                 
                 // Создаем XAML-документ
                 var builder = new XamlDocumentBuilder();

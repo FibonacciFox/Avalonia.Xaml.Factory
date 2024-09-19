@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Generators;
 
@@ -15,10 +12,8 @@ namespace Avalonia.Xaml.Factory
             var styledProperties = AvaloniaPropertyRegistry.Instance.GetRegistered(control.GetType());
             var directProperties = AvaloniaPropertyRegistry.Instance.GetRegisteredDirect(control.GetType());
             var attachedProperties = AvaloniaPropertyRegistry.Instance.GetRegisteredAttached(control.GetType());
-
-            var parentType = control.GetType().BaseType;
             
-            Control defaultControl = parentType != null ? Activator.CreateInstance(parentType) as Control : null;
+            Control defaultControl = Activator.CreateInstance(control.GetType()) as Control;
 
             // Обрабатываем StyledProperty
             foreach (var styledProperty in styledProperties)

@@ -1,6 +1,6 @@
 using Avalonia.Controls;
 
-namespace Avalonia.Xaml.Factory
+namespace Avalonia.Xaml.Factory.Generators
 {
     public static class ElementGenerator
     {
