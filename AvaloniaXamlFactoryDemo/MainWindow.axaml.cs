@@ -23,7 +23,11 @@ namespace AvaloniaXamlFactoryDemo
                 targetControl.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 targetControl.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
 
-                var textBox = new TextBox { Width = 200, Margin = new Thickness(10), Watermark = "Введите текст" };
+                var textBox = new TextBox { 
+                    Width = 200, 
+                    Margin = new Thickness(10), 
+                    Watermark = "Введите текст",
+                };
                 Grid.SetRow(textBox, 0);
                 Grid.SetColumn(textBox, 0);
 

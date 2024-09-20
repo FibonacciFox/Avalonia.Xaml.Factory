@@ -1,42 +1,38 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Generators;
+using Avalonia.Xaml.Factory.Helpers;
+using Avalonia.Xaml.Factory.Interfaces;
 
 namespace Avalonia.Xaml.Factory
 {
+    /// <summary>
+    /// Фабрика элементов, ответственная за генерацию XAML для элементов Avalonia UI.
+    /// </summary>
     public static class ElementFactory
     {
+        private static readonly IPropertyGeneratorFactory GeneratorFactory = new PropertyGeneratorFactory();
+
+        /// <summary>
+        /// Генерирует все свойства для переданного контрола и добавляет их в XAML-документ через билдер.
+        /// </summary>
+        /// <param name="control">Контрол, для которого нужно сгенерировать свойства.</param>
+        /// <param name="builder">Билдер XAML-документа.</param>
         public static void GenerateProperties(Control control, XamlDocumentBuilder builder)
         {
-            // Получаем зарегистрированные StyledProperty  DirectProperty AttachedProperty
-            var styledProperties = AvaloniaPropertyRegistry.Instance.GetRegistered(control.GetType());
-            var directProperties = AvaloniaPropertyRegistry.Instance.GetRegisteredDirect(control.GetType());
-            var attachedProperties = AvaloniaPropertyRegistry.Instance.GetRegisteredAttached(control.GetType());
-            
+            var properties = AvaloniaPropertyRegistry.Instance.GetRegistered(control.GetType());
             Control defaultControl = Activator.CreateInstance(control.GetType()) as Control;
 
-            // Обрабатываем StyledProperty
-            foreach (var styledProperty in styledProperties)
+            foreach (var property in properties)
             {
-               // Console.WriteLine($"StyledProperty найдено: {styledProperty.OwnerType.Name}.{styledProperty.Name}");
-                var generator = new StyledPropertyGenerator(control);
-                generator.Generate(builder, styledProperty, defaultControl);
-            }
+                // Используем фабрику для создания нужного генератора
+                var generator = GeneratorFactory.CreateGenerator(property, control);
 
-            // Обрабатываем DirectProperty
-            foreach (var directProperty in directProperties)
-            {
-                Console.WriteLine($"DirectProperty найдено: {directProperty.OwnerType.Name}.{directProperty.Name}");
-                var generator = new DirectPropertyGenerator(control);
-                generator.Generate(builder, directProperty, defaultControl);
-            }
-
-            // Обрабатываем AttachedProperty отдельно
-            foreach (var attachedProperty in attachedProperties)
-            {
-                //Console.WriteLine($"AttachedProperty найдено: {attachedProperty.OwnerType.Name}.{attachedProperty.Name}");
-                var generator = new AttachedPropertyGenerator(control);
-                generator.Generate(builder, attachedProperty, defaultControl);
+                // Проверяем, можно ли задать это свойство, и если да — генерируем
+                if (PropertyHelper.CanSetProperty(property))
+                {
+                    generator.Generate(builder, property, defaultControl);
+                }
             }
         }
     }
