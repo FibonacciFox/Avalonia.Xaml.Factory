@@ -2,6 +2,10 @@ using System;
 using System.Collections;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Controls.Shapes;
+using Avalonia.Layout;
+using Avalonia.Media;
 using Avalonia.Xaml.Factory;
 using Avalonia.Xaml.Factory.Generators;
 using AvaloniaEdit.TextMate;
@@ -17,32 +21,27 @@ namespace AvaloniaXamlFactoryDemo
 
             try
             {
-     
-                // Создание пользовательского контрола (пример)
-                var targetControl =  new Grid();
-                targetControl.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                targetControl.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Star });
-
-                var textBox = new TextBox { 
-                    Width = 200, 
-                    Margin = new Thickness(10), 
-                    Watermark = "Введите текст",
+                    var view = new Viewbox
+                {
+                    Stretch = Stretch.Fill,
+                    Width = 100,
+                    Height = 300,
+                    Child = new Ellipse
+                    {
+                        Width = 50,
+                        Height = 50,
+                        Fill = Brushes.CornflowerBlue
+                    }
                 };
-                Grid.SetRow(textBox, 0);
-                Grid.SetColumn(textBox, 0);
-
-                var button = new Button { Width = 200, Margin = new Thickness(10), Content = "Отправить" };
-                Grid.SetRow(button, 1);
-                Grid.SetColumn(button, 0);
-
-                targetControl.Children.Add(textBox);
-                targetControl.Children.Add(button);
+                    
+                // Создание пользовательского контрола (пример)
+                var targetControl = new TestControl();
                 
                 // Создаем XAML-документ
                 var builder = new XamlDocumentBuilder();
 
                 // Генерация элементов и атрибутов с использованием генераторов
-                ElementGenerator.GenerateElementWithAttributes(targetControl, builder);
+                ElementGenerator.GenerateElement(targetControl, builder);
 
                 // Получаем сгенерированный XAML
                 string axaml = builder.GetXml();

@@ -4,7 +4,7 @@ namespace Avalonia.Xaml.Factory.Generators
 {
     public static class ElementGenerator
     {
-        public static void GenerateElementWithAttributes(Control control, XamlDocumentBuilder builder)
+        public static void GenerateElement(Control control, XamlDocumentBuilder builder)
         {
             // Начало элемента
             builder.CreateElement(control.GetType().Name);
@@ -12,35 +12,73 @@ namespace Avalonia.Xaml.Factory.Generators
             // Генерация свойств контрола
             ElementFactory.GenerateProperties(control, builder);
 
-            // Рекурсивная генерация для дочерних элементов
+            // Генерация для дочерних элементов
             GenerateChildren(control, builder);
 
             // Завершение элемента
             builder.EndElement();
         }
 
-        // Рекурсивная генерация вложенных элементов
+        // Оптимизированная генерация вложенных элементов
         private static void GenerateChildren(Control control, XamlDocumentBuilder builder)
         {
-            // Если элемент имеет свойство Content (например, ContentControl)
+            // Обрабатываем ContentControl (например, Button, Label)
             if (control is ContentControl contentControl && contentControl.Content is Control content)
             {
-                // Рекурсивно генерируем дочерний элемент для Content
-                GenerateElementWithAttributes(content, builder);
+                // Генерируем дочерний элемент для Content
+                GenerateElement(content, builder);
+                return;
             }
 
-            // Если элемент является контейнером с Children (например, StackPanel)
+            // Обрабатываем ItemsControl (например, ListBox, ComboBox, Menu)
+            if (control is ItemsControl itemsControl)
+            {
+                foreach (var item in itemsControl.Items)
+                {
+                    // Если элемент является контролом, генерируем его как есть
+                    if (item is Control itemControl)
+                    {
+                        GenerateElement(itemControl, builder);
+                    }
+                    else
+                    {
+                        // Если элемент скалярный или строка, оборачиваем его в ListBoxItem с TextBlock
+                        GenerateScalarOrStringAsListBoxItem(item, builder);
+                    }
+                }
+                return;
+            }
+
+            // Обрабатываем контейнеры с Children (например, StackPanel, Grid)
             if (control is Panel panel)
             {
                 foreach (var child in panel.Children)
                 {
                     if (child is Control childControl)
                     {
-                        // Рекурсивно генерируем дочерние элементы для каждого ребенка
-                        GenerateElementWithAttributes(childControl, builder);
+                        // Генерация для каждого дочернего элемента
+                        GenerateElement(childControl, builder);
                     }
                 }
             }
+
+        }
+
+        // Генерация ListBoxItem для скалярных типов и строк
+        private static void GenerateScalarOrStringAsListBoxItem(object item, XamlDocumentBuilder builder)
+        {
+            // Создаем элемент ListBoxItem
+            builder.CreateElement("ListBoxItem");
+
+            // Создаем элемент TextBlock внутри ListBoxItem
+            builder.CreateElement("TextBlock");
+            builder.AddAttribute("Text", item?.ToString() ?? "null");
+
+            // Завершаем элемент TextBlock
+            builder.EndElement();
+
+            // Завершаем элемент ListBoxItem
+            builder.EndElement();
         }
     }
 }

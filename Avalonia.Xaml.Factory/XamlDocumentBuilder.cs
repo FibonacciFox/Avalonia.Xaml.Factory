@@ -3,7 +3,7 @@ using System.Xml.Linq;
 namespace Avalonia.Xaml.Factory
 {
     /// <summary>
-    /// Билдер для создания XAML-документа. Предоставляет методы для добавления элементов и атрибутов.
+    /// Билдер для создания XAML-документа.
     /// </summary>
     public class XamlDocumentBuilder
     {

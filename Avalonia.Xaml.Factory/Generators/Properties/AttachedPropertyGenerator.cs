@@ -1,44 +1,53 @@
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
-using Avalonia.Xaml.Factory.Helpers;
 
 namespace Avalonia.Xaml.Factory.Generators
 {
     /// <summary>
-    /// Генератор для DirectProperty. Отвечает за генерацию XAML для прямых свойств, унаследованных от AvaloniaProperty.
+    /// Генератор для AttachedProperty. Отвечает за генерацию XAML для присоединенных свойств AvaloniaProperty.
     /// </summary>
-    public class DirectPropertyGenerator : IPropertyGenerator
+    public class AttachedPropertyGenerator : IPropertyGenerator
     {
         private readonly Control _control;
 
         /// <summary>
-        /// Конструктор для генератора DirectProperty.
+        /// Конструктор для генератора AttachedProperty.
         /// </summary>
         /// <param name="control">Контрол, для которого генерируется XAML.</param>
-        public DirectPropertyGenerator(Control control)
+        public AttachedPropertyGenerator(Control control)
         {
             _control = control;
         }
 
         /// <summary>
-        /// Генерирует XAML для DirectProperty.
+        /// Генерирует XAML для AttachedProperty.
         /// </summary>
         /// <param name="builder">Билдер для создания XAML-документа.</param>
         /// <param name="property">Свойство, для которого генерируется XAML.</param>
         /// <param name="defaultControl">Контрол для сравнения значений по умолчанию.</param>
         public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl = null)
         {
-            // Проверяем, можно ли задать значение для свойства
-            if (PropertyHelper.CanSetProperty(property))
+            if (property.IsAttached)
             {
                 var value = _control.GetValue(property);
                 var defaultValue = defaultControl?.GetValue(property);
 
-                // Добавляем проверку на unset и null, а также сравниваем
+                // Проверяем наличие значения и его отличие от значения по умолчанию
                 if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
                 {
-                    // Добавляем атрибут в XAML через билдер
-                    builder.AddAttribute(property.Name, SerializeValue(value));
+                    // Если значение присоединенного свойства - Control, создаем сложный элемент
+                    if (value is Control controlValue)
+                    {
+                        // Начинаем новый элемент для сложного присоединенного свойства
+                        builder.CreateElement($"{property.OwnerType.Name}.{property.Name}");
+                        ElementGenerator.GenerateElement(controlValue, builder);
+                        builder.EndElement(); // Завершаем сложный элемент
+                    }
+                    else
+                    {
+                        // Для простых значений просто добавляем атрибут
+                        builder.AddAttribute($"{property.OwnerType.Name}.{property.Name}", SerializeValue(value));
+                    }
                 }
             }
         }

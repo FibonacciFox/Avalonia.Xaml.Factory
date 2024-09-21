@@ -1,42 +1,48 @@
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
-using Avalonia.Xaml.Factory.Helpers;
 
 namespace Avalonia.Xaml.Factory.Generators
 {
     /// <summary>
-    /// Генератор для AttachedProperty. Отвечает за генерацию XAML для присоединенных свойств AvaloniaProperty.
+    /// Генератор для StyledProperty. Отвечает за генерацию XAML для свойств, унаследованных от AvaloniaProperty.
     /// </summary>
-    public class AttachedPropertyGenerator : IPropertyGenerator
+    public class StyledPropertyGenerator : IPropertyGenerator
     {
         private readonly Control _control;
 
         /// <summary>
-        /// Конструктор для генератора AttachedProperty.
+        /// Конструктор для генератора StyledProperty.
         /// </summary>
         /// <param name="control">Контрол, для которого генерируется XAML.</param>
-        public AttachedPropertyGenerator(Control control)
+        public StyledPropertyGenerator(Control control)
         {
             _control = control;
         }
 
         /// <summary>
-        /// Генерирует XAML для AttachedProperty.
+        /// Генерирует XAML для StyledProperty.
         /// </summary>
         /// <param name="builder">Билдер для создания XAML-документа.</param>
         /// <param name="property">Свойство, для которого генерируется XAML.</param>
         /// <param name="defaultControl">Контрол для сравнения значений по умолчанию.</param>
         public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl = null)
         {
-            if (property.IsAttached && PropertyHelper.CanSetProperty(property))
+            // Проверяем, можно ли задать значение для свойства
+            if (_control.IsSet(property))
             {
                 var value = _control.GetValue(property);
                 var defaultValue = defaultControl?.GetValue(property);
                 
-                // Проверяем наличие значения и его отличие от значения по умолчанию
+                // Пропускаем, если свойство содержит контрол
+                if (value is Control)
+                {
+                    return;
+                }
+
+                // Добавляем проверку на корректное значение
                 if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
                 {
-                    builder.AddAttribute($"{property.OwnerType.Name}.{property.Name}", SerializeValue(value));
+                    builder.AddAttribute(property.Name, SerializeValue(value));
                 }
             }
         }

@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="AvaloniaXamlFactoryDemo.TestControl">
+    <Grid Background="White">
+            <ListBox Width="640" Height="344" FontSize="13" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Row="0" Grid.Column="0" Margin="344,32,0,0">
+                <Button Height="32" Content="Button" FontSize="13" Padding="12,7" />
+                <Button Height="32" Content="Button" FontSize="13" Padding="12,7" />
+            </ListBox>
+    </Grid>
+</UserControl>

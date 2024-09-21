@@ -1,3 +1,4 @@
+
 using Avalonia.Controls;
 using Avalonia.Xaml.Factory.Interfaces;
 using Avalonia.Xaml.Factory.Helpers;
@@ -5,23 +6,23 @@ using Avalonia.Xaml.Factory.Helpers;
 namespace Avalonia.Xaml.Factory.Generators
 {
     /// <summary>
-    /// Генератор для StyledProperty. Отвечает за генерацию XAML для свойств, унаследованных от AvaloniaProperty.
+    /// Генератор для DirectProperty. Отвечает за генерацию XAML для прямых свойств, унаследованных от AvaloniaProperty.
     /// </summary>
-    public class StyledPropertyGenerator : IPropertyGenerator
+    public class DirectPropertyGenerator : IPropertyGenerator
     {
         private readonly Control _control;
 
         /// <summary>
-        /// Конструктор для генератора StyledProperty.
+        /// Конструктор для генератора DirectProperty.
         /// </summary>
         /// <param name="control">Контрол, для которого генерируется XAML.</param>
-        public StyledPropertyGenerator(Control control)
+        public DirectPropertyGenerator(Control control)
         {
             _control = control;
         }
 
         /// <summary>
-        /// Генерирует XAML для StyledProperty.
+        /// Генерирует XAML для DirectProperty.
         /// </summary>
         /// <param name="builder">Билдер для создания XAML-документа.</param>
         /// <param name="property">Свойство, для которого генерируется XAML.</param>
@@ -29,20 +30,15 @@ namespace Avalonia.Xaml.Factory.Generators
         public void Generate(XamlDocumentBuilder builder, AvaloniaProperty property, Control defaultControl = null)
         {
             // Проверяем, можно ли задать значение для свойства
-            if (_control.IsSet(property) && PropertyHelper.CanSetProperty(property))
+            if (PropertyHelper.CanSetProperty(property))
             {
                 var value = _control.GetValue(property);
                 var defaultValue = defaultControl?.GetValue(property);
-                
-                // Пропускаем, если свойство содержит контрол
-                if (value is Control)
-                {
-                    return;
-                }
 
-                // Добавляем проверку на корректное значение
+                // Добавляем проверку на unset и null, а также сравниваем
                 if (value != AvaloniaProperty.UnsetValue && value != null && !Equals(value, defaultValue))
                 {
+                    // Добавляем атрибут в XAML через билдер
                     builder.AddAttribute(property.Name, SerializeValue(value));
                 }
             }
